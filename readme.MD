@@ -71,16 +71,11 @@ chmod +x start.sh
 # Start all services
 docker-compose up -d
 
-**Or manually:**
-```bash
-docker-compose up -d
-
 # Run migrations
 docker-compose exec backend npm run migrate
 
 # Seed database
 docker-compose exec backend npm run seed
-```
 ```
 
 ### Access the Application
@@ -139,9 +134,10 @@ docker-compose exec mysql mysql -u hospital_user -p hospital_management
 If you prefer to run without Docker:
 
 ### Prerequisites
-- Node.js (16+)
-- MySQL (8.0+)
-- Redis (optional, but recommended)
+- [Node.js](https://nodejs.org/) (version 16+ or 18+)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
+- [MySQL](https://dev.mysql.com/downloads/mysql/) (version 8.0+)
+- [Redis](https://redis.io/docs/getting-started/installation/) (optional, but recommended for caching)
 
 ### Installation
 
@@ -183,65 +179,82 @@ If you prefer to run without Docker:
 
 ## Development
 
-### Development Mode with Docker
-For development with hot reloading:
+### Prerequisites for Development
+Regardless of which development option you choose, you'll need:
+- [Node.js](https://nodejs.org/) (version 16+ or 18+) - **Required for local IDE support**
+- [Docker](https://docs.docker.com/get-docker/) (version 20.10+) - **Required for Option 1 & 3**
+- [Docker Compose](https://docs.docker.com/compose/install/) (version 2.0+) - **Required for Option 1 & 3**
+
+> **Note**: Even for full Docker development (Option 1), you'll want Node.js installed locally for proper IDE support and IntelliSense.
+
+### Option 1: Full Docker Development (Current)
+For completely containerized development:
 
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
-This enables:
-- Hot reloading for both frontend and backend
-- Source code mounting
-- Development optimizations
+**Pros**: No local dependencies needed
+**Cons**: No IntelliSense, TypeScript errors in VS Code
 
-### Project Structure
-```
-hospital-management-system/
-├── client/                 # Frontend React application
-│   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   ├── pages/          # Page components
-│   │   ├── api/            # API service functions
-│   │   ├── hooks/          # Custom React hooks
-│   │   └── styles/         # Styling and themes
-│   ├── Dockerfile
-│   └── package.json
-├── server/                 # Backend Node.js application
-│   ├── src/
-│   │   ├── controllers/    # Route controllers
-│   │   ├── models/         # Database models
-│   │   ├── routes/         # API routes
-│   │   ├── services/       # Business logic
-│   │   ├── middlewares/    # Custom middleware
-│   │   └── config/         # Configuration files
-│   ├── db/
-│   │   ├── migrations/     # Database migrations
-│   │   └── seeders/        # Database seeders
-│   ├── Dockerfile
-│   └── package.json
-├── database/               # Database initialization
-├── docker-compose.yml      # Main Docker configuration
-├── docker-compose.dev.yml  # Development overrides
-└── README.md
-```
-
-### Environment Variables
-
-Copy `.env.docker` to `.env` and customize as needed:
+### Option 2: Hybrid Development (Recommended)
+For the best development experience with full IDE support:
 
 ```bash
-# Database
-MYSQL_DATABASE=hospital_management
-MYSQL_USER=hospital_user
-MYSQL_PASSWORD=hospital_password
-
+# 1. Install dependencies locally (for IDE support)
 # Backend
-JWT_SECRET=your-super-secret-key
-NODE_ENV=development
+cd server && npm install
 
-# Frontend
-VITE_API_URL=http://localhost:5000
+# Frontend  
+cd ../client && npm install
+
+# 2. Run services in Docker (for databases)
+docker-compose up -d mysql redis
+
+# 3. Run applications locally (for development)
+# Backend (terminal 1)
+cd server && npm run dev
+
+# Frontend (terminal 2) 
+cd client && npm run dev
+```
+
+### Option 3: Docker + Local Dependencies
+Best of both worlds - containers with local IntelliSense:
+
+```bash
+# Install dependencies locally first
+cd server && npm install
+cd ../client && npm install
+
+# Then run Docker development mode
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
+
+This gives you:
+- ✅ Full IDE support (IntelliSense, TypeScript, ESLint)
+- ✅ Hot reloading through Docker volumes
+- ✅ Consistent environment across team
+
+### Recommended VS Code Setup
+
+1. **Install dependencies locally** (as shown above)
+2. **Install recommended extensions**:
+   - TypeScript and JavaScript Language Features
+   - ESLint
+   - Prettier
+   - Docker
+   - Thunder Client (for API testing)
+
+3. **Workspace settings** (`.vscode/settings.json`):
+```json
+{
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.formatOnSave": true
+}
 ```
 
 ## API Documentation
