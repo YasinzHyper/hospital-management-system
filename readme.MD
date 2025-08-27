@@ -68,7 +68,19 @@ chmod +x start.sh
 
 **Or manually:**
 ```bash
+# Start all services
 docker-compose up -d
+
+**Or manually:**
+```bash
+docker-compose up -d
+
+# Run migrations
+docker-compose exec backend npm run migrate
+
+# Seed database
+docker-compose exec backend npm run seed
+```
 ```
 
 ### Access the Application
