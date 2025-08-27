@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+// In production (Docker), use relative URLs so nginx can proxy to backend
+// In development, use the full backend URL
+const baseURL = import.meta.env.MODE === 'production' 
+  ? '/api' 
+  : import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },

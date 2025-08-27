@@ -7,8 +7,10 @@ Write-Host "=================================" -ForegroundColor Cyan
 try {
     docker info | Out-Null
     if ($LASTEXITCODE -ne 0) { throw }
+    Write-Host "✅ Docker is running" -ForegroundColor Green
 } catch {
     Write-Host "❌ Docker is not running. Please start Docker and try again." -ForegroundColor Red
+    Write-Host "Make sure Docker Desktop is installed and running." -ForegroundColor Gray
     exit 1
 }
 
@@ -18,11 +20,17 @@ docker-compose down -v --remove-orphans | Out-Null
 
 # Start all services
 Write-Host "🚀 Starting all services..." -ForegroundColor Yellow
+Write-Host "This may take a few minutes on first run to build images..." -ForegroundColor Gray
 docker-compose up -d --build
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Failed to start services. Check the logs above for details." -ForegroundColor Red
-    Write-Host "Try running: docker-compose logs" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "🔧 Troubleshooting steps:" -ForegroundColor Yellow
+    Write-Host "1. Try running: docker-compose logs" -ForegroundColor Gray
+    Write-Host "2. Check if ports 3000, 5000, 3306, 6379 are available" -ForegroundColor Gray
+    Write-Host "3. Make sure you have enough disk space" -ForegroundColor Gray
+    Write-Host "4. Try: docker system prune -f && docker-compose up -d --build" -ForegroundColor Gray
     exit 1
 }
 

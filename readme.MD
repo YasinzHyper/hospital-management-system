@@ -74,7 +74,7 @@ docker-compose up -d
 ### Access the Application
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:5000
-- **Health Check**: http://localhost:5000/health
+- **Health Check**: http://localhost:5000/api/health or http://localhost:3000/api/health
 
 ### Services Overview
 | Service | Port | Description |
@@ -261,6 +261,12 @@ API endpoints are documented using Swagger. After starting the server, access th
 1. **Services won't start**: Check if ports 3000, 5000, 3306, 6379 are available
 2. **Database connection failed**: Wait for MySQL to be fully ready (can take 2-3 minutes on first run)
 3. **Frontend not loading**: Ensure backend is accessible at http://localhost:5000/health
+4. **npm ci error**: The Dockerfiles are configured to automatically fall back to `npm install` if `package-lock.json` files are missing (common in fresh clones)
+
+### Common Issues
+- **First Run**: Initial setup may take 5-10 minutes to download images and build containers
+- **Port Conflicts**: Make sure no other applications are using ports 3000, 5000, 3306, or 6379
+- **Docker not running**: Ensure Docker Desktop is installed and running before executing startup scripts
 
 ### Reset Everything
 ```bash
