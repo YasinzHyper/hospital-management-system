@@ -195,7 +195,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
 **Pros**: No local dependencies needed
-**Cons**: No IntelliSense, TypeScript errors in VS Code
+**Cons**: IntelliSense, TypeScript errors in VS Code
 
 ### Option 2: Hybrid Development (Recommended)
 For the best development experience with full IDE support:
