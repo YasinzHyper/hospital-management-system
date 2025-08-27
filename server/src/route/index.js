@@ -6,6 +6,15 @@ const appointmentRoute = require('./appointmentRoute');
 
 const router = express.Router();
 
+// Health check endpoint
+router.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'OK',
+        message: 'Hospital Management System API is running',
+        timestamp: new Date().toISOString(),
+    });
+});
+
 const defaultRoutes = [
     {
         path: '/auth',

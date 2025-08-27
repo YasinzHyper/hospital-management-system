@@ -6,9 +6,9 @@ This full-stack application is designed to streamline hospital management proces
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Setup](#setup)
-- [Running the Application](#running-the-application)
+- [Quick Start with Docker (Recommended)](#quick-start-with-docker-recommended)
+- [Manual Setup](#manual-setup)
+- [Development](#development)
 - [API Documentation](#api-documentation)
 - [Security Features](#security-features)
 - [Contributing](#contributing)
@@ -26,85 +26,223 @@ This full-stack application is designed to streamline hospital management proces
 ## Tech Stack
 
 ### Frontend
-- React.js
-- React Router for navigation
-- Redux for state management
+- React.js with TypeScript
+- Vite for build tooling
+- Tailwind CSS for styling
+- Ant Design components
 - Axios for API requests
-- Material-UI for styling
 
 ### Backend
 - Node.js
 - Express.js
-- MySQL
-- Sequelize ORM
+- MySQL with Sequelize ORM
+- Redis for caching
+- JWT for authentication
+- Socket.IO for real-time features
 
-## Project Structure
+### Infrastructure
+- Docker & Docker Compose
+- Nginx (for production frontend)
+- Multi-stage Docker builds
 
-```
-hospital-management-system/
-├── client/                 # Frontend React application
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   ├── utils/
-│   │   └── App.js
-│   └── package.json
-├── server/                 # Backend Node.js application
-│   ├── config/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── middleware/
-│   ├── utils/
-│   └── server.js
-├── .gitignore
-├── README.md
-└── package.json
+## Quick Start with Docker (Recommended)
+
+The easiest way to run the application is using Docker Compose, which automatically sets up MySQL, Redis, and all services.
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) (version 20.10+)
+- [Docker Compose](https://docs.docker.com/compose/install/) (version 2.0+)
+
+### Start the Application
+
+**For Windows (PowerShell):**
+```powershell
+.\start.ps1
 ```
 
-## Setup
+**For macOS/Linux:**
+```bash
+chmod +x start.sh
+./start.sh
+```
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/your-username/hospital-management-system.git
+**Or manually:**
+```bash
+docker-compose up -d
+```
+
+### Access the Application
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **Health Check**: http://localhost:5000/health
+
+### Services Overview
+| Service | Port | Description |
+|---------|------|-------------|
+| frontend | 3000 | React application with Nginx |
+| backend | 5000 | Node.js/Express API server |
+| mysql | 3306 | MySQL 8.0 database |
+| redis | 6379 | Redis cache server |
+
+### Default Database Configuration
+- **Database**: hospital_management
+- **Username**: hospital_user
+- **Password**: hospital_password
+- **Host**: mysql (internal), localhost:3306 (external)
+
+### Test User Credentials
+
+The system comes pre-seeded with test users for immediate testing:
+
+| Role | Email | Password | Description |
+|------|-------|----------|-------------|
+| **Admin** | `user@example.com` | `123456` | Full system access |
+| **Doctor** | `doctor@example.com` | `123456` | Medical staff access |
+| **Nurse** | `nurse@example.com` | `123456` | Nursing staff access |
+
+> **Note**: These are test credentials for development only. Change or remove them in production!
+
+### Useful Docker Commands
+
+```bash
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild containers
+docker-compose build --no-cache
+
+# Database operations
+docker-compose exec backend npm run migrate
+docker-compose exec backend npm run seed
+
+# Access database
+docker-compose exec mysql mysql -u hospital_user -p hospital_management
+```
+
+## Manual Setup
+
+If you prefer to run without Docker:
+
+### Prerequisites
+- Node.js (16+)
+- MySQL (8.0+)
+- Redis (optional, but recommended)
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/aroragirish/hospital-management-system.git
    cd hospital-management-system
    ```
 
-2. Install dependencies for both client and server:
-   ```
-   cd client && npm install
-   cd ../server && npm install
+2. **Install dependencies:**
+   ```bash
+   # Backend
+   cd server && npm install
+   
+   # Frontend
+   cd ../client && npm install
    ```
 
-3. Set up the MySQL database and update the configuration in `server/config/database.js`.
+3. **Database setup:**
+   - Create a MySQL database named `hospital_management`
+   - Copy `server/.env.example` to `server/.env`
+   - Update database credentials in `.env`
 
-4. Run database migrations:
-   ```
+4. **Run migrations:**
+   ```bash
    cd server
-   npx sequelize-cli db:migrate
+   npm run migrate
+   npm run seed
    ```
 
-## Running the Application
-
-1. Start the backend server:
-   ```
-   cd server
-   npm start
-   ```
-
-2. In a new terminal, start the frontend application:
-   ```
-   cd client
-   npm start
+5. **Start services:**
+   ```bash
+   # Backend (terminal 1)
+   cd server && npm run dev
+   
+   # Frontend (terminal 2)
+   cd client && npm run dev
    ```
 
-3. Access the application at `http://localhost:3000` in your web browser.
+## Development
+
+### Development Mode with Docker
+For development with hot reloading:
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
+
+This enables:
+- Hot reloading for both frontend and backend
+- Source code mounting
+- Development optimizations
+
+### Project Structure
+```
+hospital-management-system/
+├── client/                 # Frontend React application
+│   ├── src/
+│   │   ├── components/     # Reusable components
+│   │   ├── pages/          # Page components
+│   │   ├── api/            # API service functions
+│   │   ├── hooks/          # Custom React hooks
+│   │   └── styles/         # Styling and themes
+│   ├── Dockerfile
+│   └── package.json
+├── server/                 # Backend Node.js application
+│   ├── src/
+│   │   ├── controllers/    # Route controllers
+│   │   ├── models/         # Database models
+│   │   ├── routes/         # API routes
+│   │   ├── services/       # Business logic
+│   │   ├── middlewares/    # Custom middleware
+│   │   └── config/         # Configuration files
+│   ├── db/
+│   │   ├── migrations/     # Database migrations
+│   │   └── seeders/        # Database seeders
+│   ├── Dockerfile
+│   └── package.json
+├── database/               # Database initialization
+├── docker-compose.yml      # Main Docker configuration
+├── docker-compose.dev.yml  # Development overrides
+└── README.md
+```
+
+### Environment Variables
+
+Copy `.env.docker` to `.env` and customize as needed:
+
+```bash
+# Database
+MYSQL_DATABASE=hospital_management
+MYSQL_USER=hospital_user
+MYSQL_PASSWORD=hospital_password
+
+# Backend
+JWT_SECRET=your-super-secret-key
+NODE_ENV=development
+
+# Frontend
+VITE_API_URL=http://localhost:5000
+```
 
 ## API Documentation
 
-API endpoints are documented using Swagger. After starting the server, you can access the API documentation at `http://localhost:5000/api-docs`.
+API endpoints are documented using Swagger. After starting the server, access the documentation at `http://localhost:5000/api-docs`.
+
+### Key Endpoints
+- `GET /health` - Health check
+- `POST /auth/login` - User authentication
+- `GET /patients` - Get all patients
+- `POST /patients` - Create new patient
+- `GET /appointments` - Get appointments
+- `POST /appointments` - Schedule appointment
 
 ## Security Features
 
@@ -115,10 +253,31 @@ API endpoints are documented using Swagger. After starting the server, you can a
 - CORS configuration
 - Secure password hashing using bcrypt
 - Environment variable management for sensitive information
+- Docker security best practices (non-root users)
+
+## Troubleshooting
+
+### Docker Issues
+1. **Services won't start**: Check if ports 3000, 5000, 3306, 6379 are available
+2. **Database connection failed**: Wait for MySQL to be fully ready (can take 2-3 minutes on first run)
+3. **Frontend not loading**: Ensure backend is accessible at http://localhost:5000/health
+
+### Reset Everything
+```bash
+# Stop and remove all containers, volumes, and images
+docker-compose down -v --rmi all
+
+# Start fresh
+docker-compose up -d --build
+```
 
 ## Contributing
 
-We welcome contributions to the Hospital Management System. Please read our contributing guidelines before submitting pull requests.
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 

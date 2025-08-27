@@ -1,0 +1,26 @@
+services:
+  # Backend with hot reloading for development
+  backend:
+    build:
+      context: ./server
+      target: development
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./server/src:/usr/src/app/src
+      - ./server/package.json:/usr/src/app/package.json
+      - /usr/src/app/node_modules
+    command: npm run dev
+
+  # Frontend with hot reloading for development  
+  frontend:
+    build:
+      context: ./client
+      target: development
+    volumes:
+      - ./client/src:/app/src
+      - ./client/package.json:/app/package.json
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run dev -- --host 0.0.0.0 --port 3000
